@@ -46,10 +46,10 @@ class MyApp extends StatelessWidget {
             borderSide: BorderSide(color: AppColors.border),
           ),
         ),
-        textTheme: const TextTheme(
+        /* textTheme: const TextTheme(
           bodyLarge: TextStyle(color: AppColors.textPrimary),
           bodyMedium: TextStyle(color: AppColors.textSecondary),
-        ),
+        ), */
         iconTheme: const IconThemeData(color: AppColors.textDark),
         dividerColor: AppColors.border,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -73,10 +73,10 @@ class MyApp extends StatelessWidget {
             borderSide: BorderSide(color: AppColors.border),
           ),
         ),
-        textTheme: const TextTheme(
+        /* textTheme: const TextTheme(
           bodyLarge: TextStyle(color: AppColors.white),
           bodyMedium: TextStyle(color: AppColors.textSecondary),
-        ),
+        ), */
         iconTheme: const IconThemeData(color: AppColors.white),
         dividerColor: AppColors.border,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(

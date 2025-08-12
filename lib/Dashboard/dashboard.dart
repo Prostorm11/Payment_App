@@ -7,13 +7,14 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
+    return SafeArea(
+      child: Scaffold(
+        body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Column(
             children: [
               const ConsistentTopInfo(userName: "Derrick"),
+              const Divider(),
               const SizedBox(height: 8),
               Expanded(
                 child: SingleChildScrollView(
