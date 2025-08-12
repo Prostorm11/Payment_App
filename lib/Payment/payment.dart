@@ -12,20 +12,29 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            ConsistentTopInfo(userName: "Derrick"),
-            Divider(),
+            const ConsistentTopInfo(userName: "Derrick"),
+            const Divider(),
+            const SizedBox(height: 
+            8,),
             Expanded(
                 child: SingleChildScrollView(
               child: Column(
                 children: [
-                  HistoryCard(
+/*                   ElevatedButton.icon(
+                    onPressed: () {},
+                    label: Text("Make Payment"),
+                    icon: Icon(Icons.add),
+                  ), */
+                  _wideButton(context, icon: Icons.add, label: "Make Payment", onTap: ()=>_showPaymentModal(context)),
+                  const SizedBox(height: 10,),
+                  const HistoryCard(
                       date: "date",
                       period: "period",
                       paymentCategory: "paymentCategory",
@@ -37,5 +46,51 @@ class _PaymentScreenState extends State<PaymentScreen> {
         ),
       ),
     );
+  }
+  Widget _wideButton(BuildContext context,
+      {required IconData icon,
+      required String label,
+      required VoidCallback onTap}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return SizedBox(
+      width: MediaQuery.of(context).size.width*0.85,
+      child: ElevatedButton.icon(
+        onPressed: onTap,
+        icon: Icon(icon, color: Colors.white),
+        label: Text(label, style: const TextStyle(fontSize: 16)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isDark ? Colors.blue[400] : Colors.blue[600],
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void>_showPaymentModal(BuildContext context)async{
+    await showDialog(context: context, builder: (BuildContext ctx){
+      return const Dialog(
+        child:  Padding(
+          padding: EdgeInsets.all(8.0),
+          child: SingleChildScrollView(
+              child: Column(children: [
+                Text("Hello"),
+                Text("Hello"),
+                Text("Hello"),
+                Text("Hello"),
+                Text("Hello"),
+                Text("Hello"),
+                Text("Hello"),
+                Text("Hello"),
+                Text("Hello"),
+                Text("Hello"),
+                Text("Hello"),
+              ],),
+          ),
+        ),
+      );
+    });
   }
 }

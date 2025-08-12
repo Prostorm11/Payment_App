@@ -20,6 +20,7 @@ class DashboardScreen extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      
                       InfoCard(
                         icon: Icons.payment,
                         toptext: "Total Fees Due",
