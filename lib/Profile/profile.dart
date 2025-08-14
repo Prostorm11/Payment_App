@@ -25,7 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       "email": "nana.ameyaw@gmail.com",
       "phone_number": "+233 123 456 789",
       "address": "KNUST Campus, Kumasi, Ghana",
-      "parent/guardian_name": "Kwame Ameyaw",
+      "parent/guardian_name": "Kwame Ameyaw"
       "emergency_contact": "+233 987 654 321"
     }
     ''';
