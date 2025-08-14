@@ -115,7 +115,7 @@ class EntryScreen extends StatefulWidget {
 class _EntryScreenState extends State<EntryScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = const [
+  final List<Widget> _screens =  [
     DashboardScreen(),
     PaymentScreen(),
     RefundScreen(),
