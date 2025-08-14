@@ -1,46 +1,87 @@
-import 'package:fee_payment_app/Dashboard/components/chart.dart';
+import 'package:fee_payment_app/convert.dart';
 import 'package:flutter/material.dart';
+import 'package:fee_payment_app/Dashboard/components/chart.dart';
 import 'package:fee_payment_app/Dashboard/components/info_card.dart';
 import 'package:fee_payment_app/components/consistent_top_info.dart';
+
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Get data from AppData singleton
+    final student = AppData.instance.student;
+    final payments = AppData.instance.payments;
+
+    // Calculate total fees due
+    final totalFeesDue = payments.fold<double>(
+      0,
+      (sum, payment) =>
+          sum + (payment['amount'] != null ? (payment['amount'] as num).toDouble() : 0),
+    );
+
+    // Find the next payment due
+    Map<String, dynamic>? nextPayment;
+    if (payments.isNotEmpty) {
+      payments.sort((a, b) {
+        final aDate = DateTime.parse(a['feeDetails']['dueDate']);
+        final bDate = DateTime.parse(b['feeDetails']['dueDate']);
+        return aDate.compareTo(bDate);
+      });
+      nextPayment = payments.first;
+    }
+
+    // Find last payment made
+    Map<String, dynamic>? lastPayment;
+    if (payments.isNotEmpty) {
+      payments.sort((a, b) => DateTime.parse(b['createdAt']).compareTo(DateTime.parse(a['createdAt'])));
+      lastPayment = payments.first;
+    }
+
     return SafeArea(
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Column(
             children: [
-              const ConsistentTopInfo(userName: "Derrick"),
-             
+              ConsistentTopInfo(
+                
+              ),
+              const Divider(),
               const SizedBox(height: 8),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      ChartPie(),
+                      const ChartPie(), // Keep your existing chart component
                       InfoCard(
                         icon: Icons.payment,
                         toptext: "Total Fees Due",
-                        middletext: "Ghc 2500.90",
+                        middletext: "Ghc ${totalFeesDue.toStringAsFixed(2)}",
                         bottomtext: "Outstanding balance for current semester",
                         onPressed: () {},
                       ),
                       InfoCard(
                         icon: Icons.calendar_today,
                         toptext: "Next Payment Due",
-                        middletext: "Nov 30, 2024",
-                        bottomtext: "Mandatory tuition fee payment",
+                        middletext: nextPayment != null
+                            ? _formatDate(nextPayment['feeDetails']['dueDate'])
+                            : "No upcoming payment",
+                        bottomtext: nextPayment != null
+                            ? nextPayment['feeDetails']['feeType']
+                            : "",
                         onPressed: () {},
                       ),
                       InfoCard(
                         icon: Icons.check_circle_outline,
                         toptext: "Last Payment Made",
-                        middletext: "Ghc 750.00",
-                        bottomtext: "Oct 15, 2024 - Semester I Installment",
+                        middletext: lastPayment != null
+                            ? "Ghc ${lastPayment['amount']}"
+                            : "No payment made",
+                        bottomtext: lastPayment != null
+                            ? _formatDate(lastPayment['createdAt'])
+                            : "",
                         onPressed: () {},
                       ),
                       const SizedBox(height: 20),
@@ -48,14 +89,18 @@ class DashboardScreen extends StatelessWidget {
                         context,
                         icon: Icons.receipt_long,
                         label: "View Receipts",
-                        onTap: () {},
+                        onTap: () {
+                          // Navigate to receipts screen
+                        },
                       ),
                       const SizedBox(height: 12),
                       _wideButton(
                         context,
                         icon: Icons.volunteer_activism,
                         label: "Request Refund",
-                        onTap: () {},
+                        onTap: () {
+                          // Navigate to refund screen
+                        },
                       ),
                     ],
                   ),
@@ -74,7 +119,7 @@ class DashboardScreen extends StatelessWidget {
       required VoidCallback onTap}) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return SizedBox(
-      width: MediaQuery.of(context).size.width*0.85,
+      width: MediaQuery.of(context).size.width * 0.85,
       child: ElevatedButton.icon(
         onPressed: onTap,
         icon: Icon(icon, color: Colors.white),
@@ -88,5 +133,10 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatDate(String dateStr) {
+    final date = DateTime.parse(dateStr);
+    return "${date.day}/${date.month}/${date.year}";
   }
 }

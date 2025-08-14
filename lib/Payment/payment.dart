@@ -21,7 +21,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const ConsistentTopInfo(userName: "Derrick"),
+            const ConsistentTopInfo(),
            
             const SizedBox(height: 32),
             Expanded(

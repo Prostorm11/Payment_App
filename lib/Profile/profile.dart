@@ -26,8 +26,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       "email": "nana.ameyaw@gmail.com",
       "phone_number": "+233 123 456 789",
       "address": "KNUST Campus, Kumasi, Ghana",
-      "parent/guardian_name": "Kwame Ameyaw",
-      "emergency_contact": "+233 987 654 321"
+      "parent_guardian_name": "Kwame Ameyaw",
+      "emergency_contact": "+233 987 654 321",
+      "student_id": "KNUST-23200",
+      "department": "Computer Science"
     }
     ''';
     studentData = json.decode(dummyJson);
@@ -40,14 +42,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(
           children: [
-            const ConsistentTopInfo(userName: "Derrick"),
+            const ConsistentTopInfo(),
             const SizedBox(height: 16),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
                     // Header with profile image and name
-                    const SizedBox(height: 16),
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
@@ -70,12 +71,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             CircleAvatar(
                               radius: 60,
-                              /*  backgroundImage: NetworkImage(studentData['profile_image']), */
+                              backgroundImage: NetworkImage(
+                                  studentData['profile_image'] ?? ''),
                               backgroundColor: Colors.white,
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              studentData['name'],
+                              studentData['name'] ?? 'No Name',
                               style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -84,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '${studentData['course_of_study']} - ${studentData['year_of_study']}',
+                              '${studentData['course_of_study'] ?? 'N/A'} - ${studentData['year_of_study'] ?? 'N/A'}',
                               style: const TextStyle(
                                 fontSize: 16,
                                 color: Colors.white70,
@@ -108,26 +110,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _buildDetailRow(Icons.school, 'Student Type',
-                                  studentData['student_type'] ?? ''),
+                                  studentData['student_type'] ?? 'N/A'),
                               const Divider(),
                               _buildDetailRow(Icons.email, 'Email',
-                                  studentData['email'] ?? ''),
+                                  studentData['email'] ?? 'N/A'),
                               const Divider(),
                               _buildDetailRow(Icons.phone, 'Phone Number',
-                                  studentData['phone_number'] ?? ''),
+                                  studentData['phone_number'] ?? 'N/A'),
                               const Divider(),
                               _buildDetailRow(Icons.location_on, 'Address',
-                                  studentData['address'] ?? ''),
+                                  studentData['address'] ?? 'N/A'),
                               const Divider(),
-                              _buildDetailRow(
-                                  Icons.person,
+                              _buildDetailRow(Icons.badge, 'Student ID',
+                                  studentData['student_id'] ?? 'N/A'),
+                              const Divider(),
+                              _buildDetailRow(Icons.account_balance,
+                                  'Department', studentData['department'] ?? 'N/A'),
+                              const Divider(),
+                              _buildDetailRow(Icons.person,
                                   'Parent/Guardian Name',
-                                  studentData['parent/guardian_name'] ?? ''),
+                                  studentData['parent_guardian_name'] ?? 'N/A'),
                               const Divider(),
-                              _buildDetailRow(
-                                  Icons.contact_phone,
+                              _buildDetailRow(Icons.contact_phone,
                                   'Emergency Contact',
-                                  studentData['emergency_contact'] ?? ''),
+                                  studentData['emergency_contact'] ?? 'N/A'),
                             ],
                           ),
                         ),

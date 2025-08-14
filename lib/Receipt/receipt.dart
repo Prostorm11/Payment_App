@@ -72,7 +72,7 @@ class ReceiptScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(
           children: [
-            const ConsistentTopInfo(userName: "Derricks"),
+            const ConsistentTopInfo(),
             const SizedBox(
               height: 16,
             ),
