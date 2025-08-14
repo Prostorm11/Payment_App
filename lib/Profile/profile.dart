@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:fee_payment_app/components/consistent_top_info.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -35,91 +36,104 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Your Profile'),
-        centerTitle: true,
-        // Uncomment the following lines to customize the app bar
-        //leading: const Icon(Icons.menu),
-        //backgroundColor: Colors.blue[800],
-        elevation: 5,
-      ),
-      body: SingleChildScrollView(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(
           children: [
-            // Header with profile image and name
+            const ConsistentTopInfo(userName: "Derrick"),
             const SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-                gradient: LinearGradient(
-                  colors: [Colors.blue[800]!, Colors.blue[600]!],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
+            Expanded(
+              child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundImage: NetworkImage(studentData['profile_image']),
-                      backgroundColor: Colors.white,
-                    ),
+                    // Header with profile image and name
                     const SizedBox(height: 16),
-                    Text(
-                      studentData['name'],
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                        gradient: LinearGradient(
+                          colors: [Colors.blue[800]!, Colors.blue[600]!],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 60,
+                              /*  backgroundImage: NetworkImage(studentData['profile_image']), */
+                              backgroundColor: Colors.white,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              studentData['name'],
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${studentData['course_of_study']} - ${studentData['year_of_study']}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${studentData['course_of_study']} - ${studentData['year_of_study']}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
+                    // Details section
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildDetailRow(Icons.school, 'Student Type',
+                                  studentData['student_type'] ?? ''),
+                              const Divider(),
+                              _buildDetailRow(Icons.email, 'Email',
+                                  studentData['email'] ?? ''),
+                              const Divider(),
+                              _buildDetailRow(Icons.phone, 'Phone Number',
+                                  studentData['phone_number'] ?? ''),
+                              const Divider(),
+                              _buildDetailRow(Icons.location_on, 'Address',
+                                  studentData['address'] ?? ''),
+                              const Divider(),
+                              _buildDetailRow(
+                                  Icons.person,
+                                  'Parent/Guardian Name',
+                                  studentData['parent/guardian_name'] ?? ''),
+                              const Divider(),
+                              _buildDetailRow(
+                                  Icons.contact_phone,
+                                  'Emergency Contact',
+                                  studentData['emergency_contact'] ?? ''),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ],
-                ),
-              ),
-            ),
-            // Details section
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildDetailRow(Icons.school, 'Student Type', studentData['student_type'] ?? ''),
-                      const Divider(),
-                      _buildDetailRow(Icons.email, 'Email', studentData['email'] ?? ''),
-                      const Divider(),
-                      _buildDetailRow(Icons.phone, 'Phone Number', studentData['phone_number'] ?? ''),
-                      const Divider(),
-                      _buildDetailRow(Icons.location_on, 'Address', studentData['address'] ?? ''),
-                      const Divider(),
-                      _buildDetailRow(Icons.person, 'Parent/Guardian Name', studentData['parent/guardian_name'] ?? ''),
-                      const Divider(),
-                      _buildDetailRow(Icons.contact_phone, 'Emergency Contact', studentData['emergency_contact'] ?? ''),
-                    ],
-                  ),
                 ),
               ),
             ),
