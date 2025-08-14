@@ -29,7 +29,7 @@ class InfoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.5),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -75,7 +75,7 @@ class InfoCard extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onPressed ?? () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? Colors.blue[400] : Colors.blue[600],
+                backgroundColor: isDark ? Colors.blue.shade400 : Colors.blue.shade600,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -83,7 +83,7 @@ class InfoCard extends StatelessWidget {
               ),
               child: const Text(
                 "View Details",
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
               ),
             ),
           ),
