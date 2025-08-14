@@ -1,3 +1,4 @@
+import 'package:fee_payment_app/Dashboard/components/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:fee_payment_app/Dashboard/components/info_card.dart';
 import 'package:fee_payment_app/components/consistent_top_info.dart';
@@ -14,13 +15,13 @@ class DashboardScreen extends StatelessWidget {
           child: Column(
             children: [
               const ConsistentTopInfo(userName: "Derrick"),
-              const Divider(),
+             
               const SizedBox(height: 8),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      
+                      ChartPie(),
                       InfoCard(
                         icon: Icons.payment,
                         toptext: "Total Fees Due",

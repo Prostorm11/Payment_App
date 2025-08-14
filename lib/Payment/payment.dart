@@ -22,8 +22,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const ConsistentTopInfo(userName: "Derrick"),
-            const Divider(),
-            const SizedBox(height: 8),
+           
+            const SizedBox(height: 32),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -84,16 +84,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8),
-                    height: MediaQuery.of(context).size.height * 0.8,
-                    child: showPaymentDetails
-                        ? PaymentDetailsScree(
-                            onNext: () {
-                              setState(() {
-                                showPaymentDetails = false; // Switch to PaymentMethod
-                              });
-                            },
-                          )
-                        : const PaymentMethod(),
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child:  PaymentDetailsScreen(ctx: ctx,paymentContext: context,),
                   ),
                   Positioned(
                     top: 5,
