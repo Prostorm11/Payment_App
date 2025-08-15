@@ -1,165 +1,142 @@
-import 'package:fee_payment_app/Dashboard/components/info_card.dart';
-import 'package:fee_payment_app/Dashboard/components/info_card.dart';
+import 'package:fee_payment_app/convert.dart';
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:fee_payment_app/Dashboard/components/chart.dart';
+import 'package:fee_payment_app/Dashboard/components/info_card.dart';
 import 'package:fee_payment_app/components/consistent_top_info.dart';
 
-class DashboardScreen extends StatefulWidget {
+
+class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends State<DashboardScreen> {
-  // Dummy transaction data
-  final Map<String, int> transactionData = {
-    'Pending': 5,
-    'Rejected': 2,
-    'Approved': 8,
-  };
-
-  @override
   Widget build(BuildContext context) {
-    final totalTransactions = transactionData.values.reduce((a, b) => a + b);
-    final List<PieChartSectionData> pieChartSections =
-        transactionData.entries.map((entry) {
-      const isTouched = false;
-      const fontSize = isTouched ? 16.0 : 12.0;
-      const radius = isTouched ? 60.0 : 50.0;
-      final value = entry.value;
-      final percentage = (value / totalTransactions * 100).toStringAsFixed(1);
+    // Get data from AppData singleton
+    final student = AppData.instance.student;
+    final payments = AppData.instance.payments;
 
-      return PieChartSectionData(
-        color: _getColor(entry.key),
-        value: value.toDouble(),
-        title: '$percentage%',
-        radius: radius,
-        titleStyle: const TextStyle(
-          fontSize: fontSize,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      );
-    }).toList();
+    // Calculate total fees due
+    final totalFeesDue = payments.fold<double>(
+      0,
+      (sum, payment) =>
+          sum + (payment['amount'] != null ? (payment['amount'] as num).toDouble() : 0),
+    );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-        //leading: const Icon(Icons.menu),
-        // backgroundColor: Colors.blue[600],
-        elevation: 5,
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Animated welcome text
-            SizedBox(
-              height: 30,
-              child: AnimatedTextKit(
-                animatedTexts: [
-                  TypewriterAnimatedText(
-                    'Welcome to your Dashboard',
-                    textStyle: const TextStyle(
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                    speed: const Duration(milliseconds: 150),
-                  ),
-                ],
-                isRepeatingAnimation: true,
+    // Find the next payment due
+    Map<String, dynamic>? nextPayment;
+    if (payments.isNotEmpty) {
+      payments.sort((a, b) {
+        final aDate = DateTime.parse(a['feeDetails']['dueDate']);
+        final bDate = DateTime.parse(b['feeDetails']['dueDate']);
+        return aDate.compareTo(bDate);
+      });
+      nextPayment = payments.first;
+    }
+
+    // Find last payment made
+    Map<String, dynamic>? lastPayment;
+    if (payments.isNotEmpty) {
+      payments.sort((a, b) => DateTime.parse(b['createdAt']).compareTo(DateTime.parse(a['createdAt'])));
+      lastPayment = payments.first;
+    }
+
+    return SafeArea(
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Column(
+            children: [
+              ConsistentTopInfo(
+                
               ),
-            ),
-           // const SizedBox(height: 16),
-            const InfoCard(
-                toptext: "Recent Payment",
-                middletext: "₵ 1,200.00",
-                bottomtext: "Sem: 1 tuition",
-                icon: Icons.account_balance_wallet),
-                const SizedBox(height: 16),
-            Card(
-              elevation: 20,
-              shadowColor: Colors.black.withValues(alpha: 10),
-              
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    // Names and values on top of the rectangle
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: transactionData.entries
-                          .map((entry) => Column(
-                                children: [
-                                  Text(
-                                    entry.key,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${entry.value}',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Container(
-                                    width: 60,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      color: _getColor(entry.key),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                  ),
-                                ],
-                              ))
-                          .toList(),
-                    ),
-                    const SizedBox(height: 16),
-                    AspectRatio(
-                      aspectRatio: 2.0,
-                      child: PieChart(
-                        PieChartData(
-                          sections: pieChartSections,
-                          centerSpaceRadius: 40,
-                          sectionsSpace: 2,
-                        ),
+              const Divider(),
+              const SizedBox(height: 8),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const ChartPie(), // Keep your existing chart component
+                      InfoCard(
+                        icon: Icons.payment,
+                        toptext: "Total Fees Due",
+                        middletext: "Ghc ${totalFeesDue.toStringAsFixed(2)}",
+                        bottomtext: "Outstanding balance for current semester",
+                        onPressed: () {},
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    
-                  ],
+                      InfoCard(
+                        icon: Icons.calendar_today,
+                        toptext: "Next Payment Due",
+                        middletext: nextPayment != null
+                            ? _formatDate(nextPayment['feeDetails']['dueDate'])
+                            : "No upcoming payment",
+                        bottomtext: nextPayment != null
+                            ? nextPayment['feeDetails']['feeType']
+                            : "",
+                        onPressed: () {},
+                      ),
+                      InfoCard(
+                        icon: Icons.check_circle_outline,
+                        toptext: "Last Payment Made",
+                        middletext: lastPayment != null
+                            ? "Ghc ${lastPayment['amount']}"
+                            : "No payment made",
+                        bottomtext: lastPayment != null
+                            ? _formatDate(lastPayment['createdAt'])
+                            : "",
+                        onPressed: () {},
+                      ),
+                      const SizedBox(height: 20),
+                      _wideButton(
+                        context,
+                        icon: Icons.receipt_long,
+                        label: "View Receipts",
+                        onTap: () {
+                          // Navigate to receipts screen
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      _wideButton(
+                        context,
+                        icon: Icons.volunteer_activism,
+                        label: "Request Refund",
+                        onTap: () {
+                          // Navigate to refund screen
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Color _getColor(String status) {
-    switch (status) {
-      case 'Pending':
-        return Colors.orange;
-      case 'Rejected':
-        return Colors.red;
-      case 'Approved':
-        return Colors.green;
-      default:
-        return Colors.grey;
-    }
+  Widget _wideButton(BuildContext context,
+      {required IconData icon,
+      required String label,
+      required VoidCallback onTap}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.85,
+      child: ElevatedButton.icon(
+        onPressed: onTap,
+        icon: Icon(icon, color: Colors.white),
+        label: Text(label, style: const TextStyle(fontSize: 16)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isDark ? Colors.blue[400] : Colors.blue[600],
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatDate(String dateStr) {
+    final date = DateTime.parse(dateStr);
+    return "${date.day}/${date.month}/${date.year}";
   }
 }

@@ -1,0 +1,143 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+
+class ChartPie extends StatefulWidget {
+  const ChartPie({super.key});
+
+  @override
+  State<ChartPie> createState() => _ChartPieState();
+}
+
+class _ChartPieState extends State<ChartPie> {
+  final Map<String, int> transactionData = {
+    'Pending': 5,
+    'Rejected': 2,
+    'Approved': 8,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final totalTransactions = transactionData.values.reduce((a, b) => a + b);
+    final List<PieChartSectionData> pieChartSections =
+        transactionData.entries.map((entry) {
+      const isTouched = false;
+      const fontSize = isTouched ? 16.0 : 12.0;
+      const radius = isTouched ? 60.0 : 50.0;
+      final value = entry.value;
+      final percentage = (value / totalTransactions * 100).toStringAsFixed(1);
+
+      return PieChartSectionData(
+        color: _getColor(entry.key),
+        value: value.toDouble(),
+        title: '$percentage%',
+        radius: radius,
+        titleStyle: const TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      );
+    }).toList();
+
+    return SizedBox(
+     
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+        // Animated welcome text
+        /* SizedBox(
+          height: 50,
+          child: AnimatedTextKit(
+            animatedTexts: [
+          TypewriterAnimatedText(
+            'Welcome to your Dashboard',
+            textStyle: const TextStyle(
+              fontSize: 22.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+            ),
+            speed: const Duration(milliseconds: 80),
+          ),
+            ],
+            isRepeatingAnimation: true,
+          ),
+        ),
+        const SizedBox(height: 16), */
+        Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+          children: [
+            // Names and values on top of the rectangle
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: transactionData.entries.map((entry) => Column(
+            children: [
+              Text(
+                entry.key,
+                style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: Colors.blue,
+                ),
+              ),
+              Text(
+                '${entry.value}',
+                style: const TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                width: 60,
+                height: 20,
+                decoration: BoxDecoration(
+              color: _getColor(entry.key),
+              borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ],
+              )).toList(),
+            ),
+            const SizedBox(height: 16),
+            AspectRatio(
+              aspectRatio: 2.0,
+              child: PieChart(
+            PieChartData(
+              sections: pieChartSections,
+              centerSpaceRadius: 40,
+              sectionsSpace: 2,
+            ),
+              ),
+            ),
+          ],
+            ),
+          ),
+        ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getColor(String status) {
+    switch (status) {
+      case 'Pending':
+        return Colors.orange;
+      case 'Rejected':
+        return Colors.red;
+      case 'Approved':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+}

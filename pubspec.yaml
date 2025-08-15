@@ -37,6 +37,16 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   pay_with_paystack: ^1.0.14
+  flutter_dotenv: ^5.1.0
+  http: ^1.4.0
+  url_launcher: ^6.3.1
+  shared_preferences: ^2.2.2
+  webview_flutter: ^4.2.1
+  loading_indicator: ^3.1.1
+  flutter_lints: ^4.0.0
+  fl_chart: ^0.67.0
+  animated_text_kit: ^4.2.2
+  
   
 
 dev_dependencies:
@@ -49,9 +59,6 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
-  fl_chart: ^0.67.0
-  animated_text_kit: ^4.2.2
-
   
 
 # For information on the generic Dart part of this file, see the

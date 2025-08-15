@@ -1,25 +1,27 @@
+import 'package:fee_payment_app/Payment/components/paystack.dart';
+import 'package:fee_payment_app/Payment/components/web_view.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 
-class PaymentDetailsScree extends StatefulWidget {
-  final VoidCallback onNext; // Callback to switch to PaymentMethod
+class PaymentDetailsScreen extends StatefulWidget {
+  final BuildContext ctx;
+  final BuildContext paymentContext;
 
-  const PaymentDetailsScree({super.key, required this.onNext});
+  const PaymentDetailsScreen(
+      {super.key, required this.ctx, required this.paymentContext});
 
   @override
-  State<PaymentDetailsScree> createState() => _PaymentDetailsScreeState();
+  State<PaymentDetailsScreen> createState() => _PaymentDetailsScreenState();
 }
 
-class _PaymentDetailsScreeState extends State<PaymentDetailsScree> {
+class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
   final _formKey = GlobalKey<FormState>();
-  final nameController = TextEditingController();
-  final indexNoController = TextEditingController();
-  final courseController = TextEditingController();
+  final amountController = TextEditingController();
+  bool fetchingData = false;
 
   @override
   void dispose() {
-    nameController.dispose();
-    indexNoController.dispose();
-    courseController.dispose();
+    amountController.dispose();
     super.dispose();
   }
 
@@ -34,50 +36,91 @@ class _PaymentDetailsScreeState extends State<PaymentDetailsScree> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Payment Details",
+              "Enter Payment Amount",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              semanticsLabel: "Payment details form",
+              semanticsLabel: "Payment amount form",
             ),
             const SizedBox(height: 12),
             TextFormField(
-              controller: nameController,
+              controller: amountController,
+              keyboardType: TextInputType.number,
               decoration: const InputDecoration(
-                labelText: "Name",
+                labelText: "Amount",
                 border: OutlineInputBorder(),
               ),
-              validator: (value) =>
-                  value == null || value.isEmpty ? "Please enter a name" : null,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: indexNoController,
-              decoration: const InputDecoration(
-                labelText: "Index No",
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) =>
-                  value == null || value.isEmpty ? "Please enter an index number" : null,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: courseController,
-              decoration: const InputDecoration(
-                labelText: "Course",
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) =>
-                  value == null || value.isEmpty ? "Please enter a course" : null,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Please enter an amount";
+                }
+                if (double.tryParse(value) == null) {
+                  return "Enter a valid number";
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 16),
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    widget.onNext(); // Trigger switch to PaymentMethod
+                onPressed: () async {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    setState(() {
+                      fetchingData = true;
+                    });
+                    final feeId = await fetchFeeIds();
+                    if (feeId == null) {
+                      setState(() {
+                        fetchingData = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("No payable fee found.")),
+                      );
+
+                      return;
+                    }
+
+                    final amount = double.parse(amountController.text);
+                    final paymentUrl = await initializePayments(feeId, amount);
+
+                    if (paymentUrl != null) {
+                      // Close the modal first
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
+
+                      // Push Payment WebView
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PaymentWebView(
+                            paymentUrl: paymentUrl,
+                            callbackUrl:
+                                "https://your-backend.com/payment-callback",
+                          ),
+                        ),
+                      );
+                    } else {
+                      setState(() {
+                        fetchingData = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text("Failed to start payment.")),
+                      );
+                    }
                   }
                 },
-                child: const Text("Next"),
+                child: fetchingData
+                    ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: LoadingIndicator(
+                          indicatorType: Indicator.ballPulse,
+                          colors:  [Colors.red,Colors.yellow,Colors.green],
+                          strokeWidth: 2,
+                          backgroundColor: Colors.transparent,
+                          pathBackgroundColor: Colors.transparent),
+                    )
+                    : const Text("Continue to Pay"),
               ),
             ),
           ],

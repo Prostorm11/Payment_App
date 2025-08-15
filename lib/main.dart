@@ -1,17 +1,26 @@
+import 'package:fee_payment_app/convert.dart';
 import 'package:flutter/material.dart';
+import 'package:fee_payment_app/SignIn/components/authService.dart';
+import 'package:fee_payment_app/SignIn/signIn.dart';
 import 'package:fee_payment_app/Dashboard/dashboard.dart';
 import 'package:fee_payment_app/Payment/payment.dart';
 import 'package:fee_payment_app/Profile/profile.dart';
 import 'package:fee_payment_app/Receipt/receipt.dart';
 import 'package:fee_payment_app/Refund/refund.dart';
+import 'package:pay_with_paystack/pay_with_paystack.dart';
 
+void main() async{
+   WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
-  
+  try {
+    await AppData.instance.fetchDashboard();
+    print("Dashboard data loaded successfully");
+  } catch (e) {
+    print("Error fetching dashboard data: $e");
+  }
   runApp(const MyApp());
 }
 
-/// Color palette for the app
 class AppColors {
   static const primary = Color(0xFF1976D2);
   static const textPrimary = Color(0xFF1a4971);
@@ -29,13 +38,15 @@ class AppColors {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  Future<bool> _checkLogin() async {
+    return await AuthService.isLoggedIn();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Fee Payment App',
       debugShowCheckedModeBanner: false,
-
-      // Light theme
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: AppColors.primary,
@@ -48,10 +59,6 @@ class MyApp extends StatelessWidget {
             borderSide: BorderSide(color: AppColors.border),
           ),
         ),
-        /* textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: AppColors.textPrimary),
-          bodyMedium: TextStyle(color: AppColors.textSecondary),
-        ), */
         iconTheme: const IconThemeData(color: AppColors.textDark),
         dividerColor: AppColors.border,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -61,8 +68,6 @@ class MyApp extends StatelessWidget {
           unselectedItemColor: AppColors.placeholderText,
         ),
       ),
-
-      // Dark theme
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         primaryColor: AppColors.primary,
@@ -75,10 +80,6 @@ class MyApp extends StatelessWidget {
             borderSide: BorderSide(color: AppColors.border),
           ),
         ),
-        /* textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: AppColors.white),
-          bodyMedium: TextStyle(color: AppColors.textSecondary),
-        ), */
         iconTheme: const IconThemeData(color: AppColors.white),
         dividerColor: AppColors.border,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -88,9 +89,24 @@ class MyApp extends StatelessWidget {
           unselectedItemColor: AppColors.placeholderText,
         ),
       ),
-
       themeMode: ThemeMode.system,
-      home: const EntryScreen(),
+
+      // Use FutureBuilder to decide screen
+      home: FutureBuilder<bool>(
+        future: _checkLogin(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (snapshot.data == true) {
+            return const EntryScreen();
+          } else {
+            return const SignInScreen();
+          }
+        },
+      ),
     );
   }
 }
@@ -105,7 +121,7 @@ class EntryScreen extends StatefulWidget {
 class _EntryScreenState extends State<EntryScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = const [
+  final List<Widget> _screens =  [
     DashboardScreen(),
     PaymentScreen(),
     RefundScreen(),
